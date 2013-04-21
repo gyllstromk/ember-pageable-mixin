@@ -1,0 +1,13 @@
+{
+  "name": "ember-pageable-mixin",
+  "version": "0.0.1",
+  "main": [
+    "./pageable_mixin.js"
+  ],
+  "dependencies": {},
+  "description": "Ember mixin enabling easy pagination over enumerations such as ArrayController.",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gyllstromk/ember-pageable-mixin.git"
+  }
+}
