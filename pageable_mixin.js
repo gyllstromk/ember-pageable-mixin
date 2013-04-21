@@ -22,6 +22,10 @@ var get = Ember.get,
 Ember.PageableMixin = Ember.Mixin.create(Ember.MutableEnumerable, {
     pageNumber: 0,
     pageSize: 10,
+    _viewChanged: false, // current hackish approach to determine when arranged
+                         // content must be updated. this should only happen if
+                         // the range of items within the current view would
+                         // change
 
     /**
      * Gets number of pages.
@@ -41,7 +45,21 @@ Ember.PageableMixin = Ember.Mixin.create(Ember.MutableEnumerable, {
         set(this, 'pageNumber', 0);
     }, 'pageSize'),
 
-    arrangedContent: Ember.computed('content.@each', 'pageNumber', 'pageSize', function () {
+    contentArrayDidChange: function(array, idx, removedCount, addedCount) {
+        var pageNumber = get(this, 'pageNumber');
+        var pageSize = get(this, 'pageSize');
+
+        var start = pageNumber * pageSize;
+        var end = start + pageSize;
+
+        if (idx <= end && idx + removedCount + addedCount >= start) {
+            this.toggleProperty('_viewChanged');
+        }
+
+        return this._super(array, idx, removedCount, addedCount);
+    },
+
+    arrangedContent: Ember.computed('_viewChanged', 'content', 'pageNumber', 'pageSize', function () {
         var content = get(this, 'content');
         if (! content) {
             return Ember.A([]);
@@ -51,7 +69,7 @@ Ember.PageableMixin = Ember.Mixin.create(Ember.MutableEnumerable, {
         var start = get(this, 'pageNumber') * pageSize;
         var end = start + pageSize;
         return content.slice(start, end);
-    }),
+    }).cacheable(),
 
     /**
      * Decrements pageNumber. If pageNumber is already 0, does nothing.
