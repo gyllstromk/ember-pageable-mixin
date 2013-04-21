@@ -43,7 +43,7 @@ Ember.PageableMixin = Ember.Mixin.create(Ember.MutableEnumerable, {
         // setting page back to 0
 
         set(this, 'pageNumber', 0);
-    }, 'pageSize'),
+    }, 'pageSize', 'content'),
 
     contentArrayDidChange: function(array, idx, removedCount, addedCount) {
         var pageNumber = get(this, 'pageNumber');
